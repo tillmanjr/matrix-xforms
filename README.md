@@ -7,9 +7,9 @@
 4. Get back the transformed set of points
 
 #### Supplied transformation matrices
-  Identity
-  TranslateTo
-  ScaleBy
-  SheerX
-  SheerY
-  RotateAboutOrigin
+  Identity  
+  TranslateTo  
+  ScaleBy  
+  SheerX  
+  SheerY  
+  RotateAboutOrigin  
