@@ -1,4 +1,5 @@
 const fns = require('./utils/transformation-functions')
+const enums = require('./utils/enumeration')
 /*
 transformation matrix
 given:
@@ -30,12 +31,6 @@ const xyhelpers = require('./utils/xy-helpers')
 const xFromXY = xyhelpers.xFromXY
 const yFromXY = xyhelpers.yFromXY
 
-const identityMatrix = {
-  a: 1, c: 0, tx: 0,
-  b: 0, d: 1, ty: 0,
-  e: 0, f: 0, tz: 1
-}
-
 const generateIdentityMatrix = () => {
   return {
     a: 1, c: 0, tx: 0,
@@ -45,27 +40,27 @@ const generateIdentityMatrix = () => {
 }
 
 const generateTranslateToMatrix = (xy) => {
-  let result = identityMatrix
+  let result = generateIdentityMatrix()
   result.tx = xFromXY(xy)
   result.ty = yFromXY(xy)
   return result
 }
 
 const generateScaleByMatrix = (scaleFactor) => {
-  let result = identityMatrix
+  let result = generateIdentityMatrix()
   result.a = scaleFactor
   result.d = scaleFactor
   return result
 }
 
 const generateSheerXMatrix = (radians) => {
-  let result = identityMatrix
+  let result = generateIdentityMatrix()
   result.c = fns.tan(radians)
   return result
 }
 
 const generateSheerYMatrix = (radians) => {
-  let result = identityMatrix
+  let result = generateIdentityMatrix()
   result.b = fns.tan(radians)
   return result
 }
@@ -75,12 +70,45 @@ const generateRotateAboutOriginMatrix = (radians) => {
   const cosRadians = fns.cos(radians)
   const rotateCC = radians < 0 ? true : false
 
-  let result = identityMatrix
+  let result = generateIdentityMatrix()
   result.a = cosRadians
   result.c = rotateCC ? sinRadians : fns.negativeOf(sinRadians)
   result.b = rotateCC ? fns.negativeOf(sinRadians) : sinRadians
   result.d = cosRadians
 
+  return result
+}
+
+// a pseudo enum for the three support reflect transformations
+const reflectOnEnum = enums.enumeration(
+  {'invalid': 0},
+  {'origin':  1},
+  {'xAxis':   2},
+  {'yAxis':   4}
+)
+
+const reflectOnEigenValues = (reflectOn) => {
+  if (reflectOn === reflectOnEnum.invalid) {
+    return {a:1, d:1, tz:1}
+  }
+  if (reflectOn === reflectOnEnum.origin) {
+    return {a:-1, d:-1, tz:1}
+  }
+  if (reflectOn === reflectOnEnum.xAxis) {
+    return {a:1, d:-1, tz:1}
+  }
+  if (reflectOn === reflectOnEnum.yAxis) {
+    return {a:-1, d:1, tz:1}
+  }
+  throw new exception('invalid reflectOn value. Must be a valid reflectOnEnum member ')
+}
+
+const generateReflectMatrix = (reflectOn) => {
+  const eigens = reflectOnEigenValues(reflectOn)
+  let result = generateIdentityMatrix()
+  result.a = eigens.a
+  result.d = eigens.d
+  result.tz = eigens.tz
   return result
 }
 
@@ -90,11 +118,12 @@ const generateRotateAboutOriginMatrix = (radians) => {
 //TODI: tdjs look into affine and perspective transforms
 
 module.exports = {
-  identityMatrix,
   generateIdentityMatrix,
   generateTranslateToMatrix,
   generateScaleByMatrix,
   generateSheerXMatrix,
   generateSheerYMatrix,
-  generateRotateAboutOriginMatrix
+  generateRotateAboutOriginMatrix,
+  generateReflectMatrix,
+  reflectOnEnum
 }

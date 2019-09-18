@@ -38,11 +38,20 @@ const doShearYXForm = (xys, radians) => {
   return transform(xys, xForm)
 }
 
+const reflectOnEnum = matrices.reflectOnEnum
+
+const doReflectTransform = (xys, reflectOn) => {
+  const xForm = matrices.generateReflectMatrix(reflectOn)
+  return transform(xys, xForm)
+}
+
 module.exports = {
   doIdentityXForm,
   doScaleByXForm,
   doTranslateXForm,
   doRotateAboutOriginXForm,
   doShearXXForm,
-  doShearYXForm
+  doShearYXForm,
+  doReflectTransform,
+  reflectOnEnum
 }
