@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dotests": "node ./src/tests/transformation-spec.js"
+    "dotests": "node ./src/tests/transformation-spec.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",

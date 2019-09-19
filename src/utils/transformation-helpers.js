@@ -8,6 +8,19 @@ const matrices = require('../transformationMatrices')
   // generateSheerYMatrix,
   // generateRotateAboutOriginMatrix
 
+const areEquivalent = (lhXForm, rhXForm) => {
+  const lhEntries = Object.entries(lhXForm)
+  const errCount = lhEntries.reduce( (total, currentEntry) => {
+    const propName = currentEntry[0]
+    const lhsValue = currentEntry[1]
+    const rhsValue = rhXForm[propName]
+    return epsilonCompare(lhsValue, rhsValue)
+      ? total
+      : total + 1
+  }, 0)
+  return errCount === 0
+}
+
 const doIdentityXForm = (xys) => {
   const xForm = matrices.generateIdentityMatrix()
   return transform(xys, xForm)
@@ -46,6 +59,7 @@ const doReflectTransform = (xys, reflectOn) => {
 }
 
 module.exports = {
+  areEquivalent,
   doIdentityXForm,
   doScaleByXForm,
   doTranslateXForm,

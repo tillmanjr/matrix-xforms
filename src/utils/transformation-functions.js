@@ -9,6 +9,11 @@ const substitute = (val, substVal) => substVal
 const multiply = (lhs, rhs) => lhs * rhs
 const negativeOf = val => multiply(val, -1)
 
+const epsilonCompare = (lhs, rhs) => {
+  return lhs >= rhs
+    ? lhs - rhs < Number.EPSILON
+    : rhs - lhs < Number.EPSILON
+}
 
 module.exports = {
   cos,
@@ -18,5 +23,6 @@ module.exports = {
   add,
   substitute,
   multiply,
-  negativeOf
+  negativeOf,
+  epsilonCompare
 }

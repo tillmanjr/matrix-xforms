@@ -7,6 +7,7 @@ const  fns = require('./transformation-functions')
   // substitute,
   // multiply,
   // negativeOf
+  // epsilonCompare
 
 const epsilonCompare = (lhs, rhs) => {
   return lhs >= rhs
@@ -99,4 +100,13 @@ test('Tangent of 0.5 radians equals 0.5463024898437905', () => {
 
 test('Tangent of 1 radians equals 1.5574077246549022', () => {
   expect(fns.tan(1)).toBeCloseTo(tan1)
+})
+
+// NOTE: MATH.epsilon = 2.220446049250313e-16
+test('Epsilon compare should be true for 1 and 1+2.22-16', () => {
+  expect(fns.epsilonCompare(1, 1.0000000000000001)).toBe(true)
+})
+
+test('Epsilon compare should be false for 1 and 1+3.22-16', () => {
+  expect(fns.epsilonCompare(1, 1.0000000000000002)).toBe(false)
 })
