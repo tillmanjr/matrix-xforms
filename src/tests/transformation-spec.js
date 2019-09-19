@@ -1,11 +1,16 @@
 const {plot, stack, clear, Plot} = require('nodeplotlib')
 const xforms = require('../utils/transformation-helpers')
+const matrices = require('../transformationMatrices')
+
   // doIdentityXForm,
   // doScaleByXForm,
   // doTranslateXForm,
   // doRotateAboutOriginXForm,
   // doShearXXForm,
   // doShearYXForm
+  // doReflectTransform
+  // generateReflectMatrix,
+  // reflectOnEnum,
 
 const testData = [
   [0, 0],
@@ -173,6 +178,64 @@ const testShearYXform = (data, radians, showPlots=false) => {
   return true
 }
 
+// internal method for testing reflect transform once reflection type has been determined
+const _doTestReflectOn = (data, reflectOnValue, title, showPlots) => {
+  const result = xforms.doReflectTransform(data, reflectOnValue)
+  const plotDataObj = createPlotDataObject(data, result, title)
+
+  displayTestResults(plotDataObj, showPlots)
+
+  return true
+}
+
+const testReflectOnOrigin = (data, showPlots=false) => {
+  const title = `testing Reflect on Origin transform`
+  const reflectOnValue = matrices.reflectOnEnum.origin
+  return _doTestReflectOn(data, reflectOnValue, title, showPlots)
+}
+
+const testReflectOnXAxis = (data, showPlots=false) => {
+  const title = `testing Reflect on X-Axis transform`
+  const reflectOnValue = matrices.reflectOnEnum.xAxis
+  return _doTestReflectOn(data, reflectOnValue, title, showPlots)
+}
+
+const testReflectOnYAxis = (data, showPlots=false) => {
+  const title = `testing Reflect on Y-Axis transform`
+  const reflectOnValue = matrices.reflectOnEnum.yAxis
+  return _doTestReflectOn(data, reflectOnValue, title, showPlots)
+}
+
+
+const partialRight = (fn, ...partials) => (...args) => fn(...args, ...partials);
+
+function runAllThrottled(data, showPlot) {
+  const functions = [
+    partialRight(testScaleByTransform, 3, showPlot),
+    partialRight(testTranslateToTransform, [2,3], showPlot),
+    partialRight(testRotateAboutOriginXForm, Math.PI, showPlot),//howPlot)
+    partialRight(testRotateAboutOriginXForm, (0.25 * Math.PI), showPlot),
+    partialRight(testShearXXform, (0.125 * Math.PI), showPlot),
+    partialRight(testShearYXform, (0.125 * Math.PI), showPlot),
+    partialRight(testReflectOnOrigin, showPlot),
+    partialRight(testReflectOnXAxis, showPlot),
+    partialRight(testReflectOnYAxis, showPlot)
+  ]
+  const fnInterval = 1000
+  const fnCount = functions.length
+  let fnIndex = 0
+  const runOneFn = () => {
+    functions[fnIndex](data)
+    clear()
+    fnIndex ++
+    if (fnIndex >= fnCount) {
+      clearInterval(fnTimer)
+    }
+  }
+  let fnTimer= setInterval(runOneFn, fnInterval)
+
+}
+
 const runAll = (data, showPlot) => {
   testIdentityTransform(data, showPlot)
   testScaleByTransform(data, 3, showPlot)
@@ -181,7 +244,22 @@ const runAll = (data, showPlot) => {
   testRotateAboutOriginXForm(data, (0.25 * Math.PI), showPlot)
   testShearXXform(data, (0.125 * Math.PI), showPlot)
   testShearYXform(data, (0.125 * Math.PI), showPlot)
+  testReflectOnOrigin(data, showPlot)
+  testReflectOnXAxis(data, showPlot)
+  testReflectOnYAxis(data, showPlot)
 }
 
-// runAll(testDataRtTriangle, false)
-// runAll(testData, true)
+// if true the tests will emit a plot in a browser, else values to command line
+const generatePlot = true
+
+/* Uncomment the type of test you'd like to run */
+
+// this runs all the test sequentially using a triangle
+// runAll(testDataRtTriangle, generatePlot)
+
+// this runs all the test sequentially using a square
+// runAll(testData, trgeneratePlotue)
+
+// this runs all the test sequentially using a square, but adds a delay between each test
+// runAllThrottled(testData, generatePlot)
+
