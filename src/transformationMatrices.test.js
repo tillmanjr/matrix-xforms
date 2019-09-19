@@ -1,17 +1,19 @@
 'use strict;'
-const m = require('./transformationMatrices')
-// generateIdentityMatrix,
-  // generateTranslateToMatrix,
-  // generateScaleByMatrix,
-  // generateSheerXMatrix,
-  // generateSheerYMatrix,
-  // generateRotateAboutOriginMatrix,
-  // generateReflectMatrix,
-  // reflectOnEnum
+
+const {
+  generateIdentityMatrix,
+  generateTranslateToMatrix,
+  generateScaleByMatrix,
+  generateSheerXMatrix,
+  generateSheerYMatrix,
+  generateRotateAboutOriginMatrix,
+  generateReflectMatrix,
+  reflectOnEnum
+ } = require('./transformationMatrices')
 
 
 test('generateIdentityMatrix: should be all 0s except the Eigens which are 1', () => {
-  let matrix = m.generateIdentityMatrix()
+  let matrix = generateIdentityMatrix()
    expect(matrix.a).toEqual(1)
    expect(matrix.c).toEqual(0)
    expect(matrix.tx).toEqual(0)
@@ -27,9 +29,7 @@ test('generateIdentityMatrix: should be all 0s except the Eigens which are 1', (
 })
 
 test('Translation matrix for [12, 34] should be an Identity 0s except tx and ty should be 12, 34', () => {
-
-    let matrix = m.generateTranslateToMatrix([12,34])
-
+    let matrix = generateTranslateToMatrix([12,34])
     expect(matrix.a).toEqual(1)
     expect(matrix.c).toEqual(0)
     expect(matrix.tx).toEqual(12)
