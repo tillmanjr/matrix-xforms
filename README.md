@@ -13,3 +13,4 @@
   SheerX  
   SheerY  
   RotateAboutOrigin  
+  ReflectOn [origin, x-axis, y-axis]
